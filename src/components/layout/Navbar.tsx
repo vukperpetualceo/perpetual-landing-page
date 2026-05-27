@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { useState } from "react";
+import logo from "@/assets/logo.png";
 
 const navLinks = [
   { label: "Features", href: "#features" },
@@ -23,9 +24,11 @@ export const Navbar = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <a href="#" className="flex items-center">
-            <span className="inline-flex items-center rounded-md border border-border bg-card px-3 py-1.5 text-xs font-semibold tracking-[0.2em] text-foreground shadow-sm">
-              PERPETUAL
-            </span>
+            <img
+              src={logo}
+              alt="Perpetual"
+              className="h-8 w-auto rounded-sm invert"
+            />
           </a>
 
           {/* Desktop Navigation */}

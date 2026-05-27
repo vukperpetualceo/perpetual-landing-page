@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import logo from "@/assets/logo.png";
 
 const footerLinks = {
   Product: ["Features", "Pricing", "Integrations", "API"],
@@ -15,9 +16,7 @@ export const Footer = () => {
           {/* Brand */}
           <div className="md:col-span-2">
             <div className="mb-4">
-              <span className="inline-flex items-center rounded-md border border-border bg-card px-3 py-1.5 text-xs font-semibold tracking-[0.2em] text-foreground shadow-sm">
-                PERPETUAL
-              </span>
+              <img src={logo} alt="Perpetual" className="h-8 w-auto rounded-sm invert" />
             </div>
             <p className="text-muted-foreground max-w-xs">
               AI-powered ICP discovery and sales automation for modern B2B companies.
