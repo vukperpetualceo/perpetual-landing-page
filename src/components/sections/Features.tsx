@@ -13,26 +13,46 @@ import featureDataloop from "@/assets/feature-dataloop.png";
 const features = [
   {
     icon: Target,
-    title: "AI-Powered ICP Discovery",
-    description: "With industry based prompting configuration, Marcus AI analyzes 500+ potential companies in your market at once to determine which is the best match for your offering.",
+    title: "Signal Driven ICP Search",
+    description:
+      "Perpetual actively identifies which companies are or moving towards a buying position based on",
+    signals: ["Project Signals", "Pain Signals", "Buying Readiness Signals", "Organizational Signals"],
     image: featurePipeline,
   },
   {
     icon: Search,
-    title: "Deep Scraping & Intelligent Matching",
-    description: "Automatically search and aggregate company information from across the web—financials, news, tech stack—then match your unique value proposition to companies most likely to benefit from a partnership.",
+    title: "Real time scrapping & Intelligent Matching",
+    description:
+      "Perpetual continuously analyzes operational and market signals to identify companies actively moving toward a buying decision.",
+    signalsIntro: "This includes signals such as:",
+    signals: [
+      "Technology Adoption",
+      "Project Expansion",
+      "Vendor Relationships",
+      "Operational Bottlenecks",
+      "Organizational Changes",
+      "Competitive Pressure",
+    ],
+    descriptionAfter:
+      "The result is a continuously updating pipeline of companies ranked by their likelihood to buy your product.",
     image: featureSmb,
   },
   {
     icon: TrendingUp,
-    title: "Partnership Analysis & Personalized Outreach",
-    description: "Get data-driven insights on partnership likelihood, potential value, and strategic fit, then generate customized proposals tailored to each prospect's specific needs.",
+    title: "Continuous ICP Tracking",
+    description:
+      "Perpetual continuously tracks your target customers after they enter your pipeline surfacing:",
+    signals: ["new signals", "organizational changes", "buying indicators"],
+    signalsAfter: "as they happen.",
+    descriptionAfter:
+      "This allows sales teams to adapt outreach based on real-time account movement.",
     image: featureDistributors,
   },
   {
     icon: RefreshCw,
-    title: "Continuous Data Loop",
-    description: "Draft and send hyper-personalized emails that resonate with decision-makers and drive responses.",
+    title: "Actionable Intelligence",
+    description:
+      "Perpetual identifies the highest-value decision makers within an ICP and surfaces the operational context, buying signals, and strategic angles most relevant to each stakeholder.",
     image: featureDataloop,
   },
 ];
@@ -52,11 +72,11 @@ export const Features = () => {
           className="text-center max-w-3xl mx-auto mb-20"
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Everything You Need to{" "}
-            <span className="text-gradient">Scale Partnerships</span>
+            Real Time Intelligence on{" "}
+            <span className="text-gradient">who is ready to buy</span>
           </h2>
           <p className="text-xl text-muted-foreground">
-            From discovery to outreach, Perpetual handles the entire partnership pipeline with AI precision.
+            From signal detection to outreach, Perpetual gives your team real-time visibility into buying intent.
           </p>
         </motion.div>
 
@@ -85,6 +105,28 @@ export const Features = () => {
                   <p className="text-lg text-muted-foreground leading-relaxed max-w-xl">
                     {feature.description}
                   </p>
+                  {"signalsIntro" in feature && feature.signalsIntro ? (
+                    <p className="text-lg text-muted-foreground leading-relaxed max-w-xl">
+                      {feature.signalsIntro}
+                    </p>
+                  ) : null}
+                  {"signals" in feature && feature.signals ? (
+                    <ul className="max-w-xl list-disc space-y-1 pl-5 text-base text-muted-foreground">
+                      {feature.signals.map((signal) => (
+                        <li key={signal}>{signal}</li>
+                      ))}
+                    </ul>
+                  ) : null}
+                  {"signalsAfter" in feature && feature.signalsAfter ? (
+                    <p className="text-lg text-muted-foreground leading-relaxed max-w-xl">
+                      {feature.signalsAfter}
+                    </p>
+                  ) : null}
+                  {"descriptionAfter" in feature && feature.descriptionAfter ? (
+                    <p className="text-lg text-muted-foreground leading-relaxed max-w-xl">
+                      {feature.descriptionAfter}
+                    </p>
+                  ) : null}
                 </div>
 
                 {/* Image Side */}

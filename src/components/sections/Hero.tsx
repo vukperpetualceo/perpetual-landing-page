@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Paperclip, Send } from "lucide-react";
 
 export const Hero = () => {
   return (
@@ -30,9 +30,9 @@ export const Hero = () => {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="text-5xl md:text-7xl font-bold tracking-tight mb-6"
           >
-            <span className="text-foreground">Find your ICP with</span>
+            <span className="text-foreground">Buying Intelligence for</span>
             <br />
-            <span className="text-gradient">AI Precision</span>
+            <span className="text-gradient">Modern Outbound Sales</span>
           </motion.h1>
 
           {/* Subheadline */}
@@ -42,9 +42,33 @@ export const Hero = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="text-xl text-muted-foreground max-w-2xl mx-auto mb-10"
           >
-            Perpetual uses construction industry data to find your ideal customer, cutting down 
-            time lost and capital wasted at the start of sales integration
+            Find your next buyer using real-time buying signals and actionable intelligence.
           </motion.p>
+
+          {/* Chatbot Preview */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, delay: 0.28 }}
+            className="mx-auto mb-12 max-w-3xl text-left"
+          >
+            <div className="rounded-2xl border border-border bg-card p-5 shadow-card">
+              <div className="rounded-xl border border-border bg-background p-4">
+                <p className="mb-14 text-sm text-muted-foreground">
+                  List the top 5 companies by match score...
+                </p>
+                <div className="flex items-center justify-between border-t border-border pt-3">
+                  <Paperclip className="h-4 w-4 text-muted-foreground" />
+                  <button
+                    aria-label="Send message"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-foreground"
+                  >
+                    <Send className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </motion.div>
 
           {/* CTA Buttons */}
           <motion.div

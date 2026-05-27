@@ -20,7 +20,7 @@ export const Footer = () => {
               </span>
             </div>
             <p className="text-muted-foreground max-w-xs">
-              AI-powered ICP discovery and partnership automation for modern B2B companies.
+              AI-powered ICP discovery and sales automation for modern B2B companies.
             </p>
           </div>
 

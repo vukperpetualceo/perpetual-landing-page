@@ -62,12 +62,12 @@ export const Pricing = () => {
             Enterprise Solutions
           </span>
           <h2 className="text-4xl md:text-5xl font-bold mt-4 mb-6">
-            Let's Build Your{" "}
-            <span className="text-gradient">Custom AI Model</span>
+            Choose Precision{" "}
+            <span className="text-gradient">over Volume</span>
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             We work exclusively with enterprise clients to build and train 
-            custom AI models tailored to your unique partnership discovery needs.
+            custom AI models tailored to your unique ICP discovery needs.
           </p>
         </motion.div>
 

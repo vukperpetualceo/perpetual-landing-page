@@ -32,7 +32,7 @@ export const CTA = () => {
 
           <h2 className="text-4xl md:text-6xl font-bold mb-6">
             Ready to Discover Your{" "}
-            <span className="text-gradient">Ideal Partners?</span>
+            <span className="text-gradient">Next Buyer?</span>
           </h2>
           
 

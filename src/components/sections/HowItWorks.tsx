@@ -5,23 +5,27 @@ import { Check } from "lucide-react";
 const steps = [
   {
     number: "01",
-    title: "Connect Your Business",
-    description: "Define your ICP, Signal specifications, and product to us so we can tailor our AI, Marcus, to start searching for your ideal customers.",
+    title: "Personalize Perpetual to your Business",
+    description:
+      "Define your ICP, signal specifications, and product so Perpetual becomes tailored to your organization and sales teams' goals.",
   },
   {
     number: "02",
-    title: "AI Discovers ICPs",
-    description: "Marcus will deep scrape and search the internet and identify an initial batch of companies matching your specifications.",
+    title: "Surface High-Intent Companies",
+    description:
+      "Using your selected buying signals and ICP criteria, Perpetual surfaces companies most likely to be entering a buying window for your product or service.",
   },
   {
     number: "03",
-    title: "Intelligence Layer",
-    description: "Perpetual's intelligence layer groups data into three separate categories:\n1.) Company profile\n2.) Competitor & Market Intelligence data\n3.) Buyer signals\nand scrapes all continuously for updates to your ICP pipeline.",
+    title: "Prioritize High-Value Accounts",
+    description:
+      "Perpetual allows teams to prioritize the accounts most aligned with their offer, then continuously monitors those companies for new buying signals, organizational shifts, and opportunity movement.",
   },
   {
     number: "04",
     title: "Engage & Convert",
-    description: "Start reaching out to your high priority ICPs with curated strategies and monitor all others.",
+    description:
+      "Prioritize outreach toward your most strategically relevant accounts while Perpetual continuously surfaces new opportunities across your market.",
   },
 ];
 
@@ -127,7 +131,7 @@ export const HowItWorks = () => {
             How <span className="text-gradient">Perpetual</span> Works
           </h2>
           <p className="text-xl text-muted-foreground">
-            Four simple steps to transform your partnership strategy
+            Four simple steps to transform your outbound sales process
           </p>
         </motion.div>
 

@@ -3,9 +3,9 @@ import { Quote } from "lucide-react";
 
 const testimonials = [
   {
-    quote: "Perpetual transformed our partnership strategy. We closed 3 major deals in the first month that we would have never discovered on our own.",
+    quote: "Perpetual transformed our outbound sales strategy. We closed 3 major deals in the first month that we would have never discovered on our own.",
     author: "Sarah Chen",
-    role: "VP of Partnerships",
+    role: "VP of Sales",
     company: "TechScale Inc.",
   },
   {
@@ -37,7 +37,7 @@ export const Testimonials = () => {
           className="text-center max-w-3xl mx-auto mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Loved by <span className="text-gradient">Partnership Teams</span>
+            Loved by <span className="text-gradient">Sales Teams</span>
           </h2>
           <p className="text-xl text-muted-foreground">
             See what industry leaders are saying about Perpetual
