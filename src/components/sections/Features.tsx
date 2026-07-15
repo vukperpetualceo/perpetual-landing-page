@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
 import { 
-  Target, 
-  Search, 
-  TrendingUp, 
-  RefreshCw 
+  FileCheck, 
+  ListChecks, 
+  Contact, 
+  BellRing 
 } from "lucide-react";
 import featurePipeline from "@/assets/feature-pipeline.png";
 import featureSmb from "@/assets/feature-smb.png";
@@ -12,47 +12,31 @@ import featureDataloop from "@/assets/feature-dataloop.png";
 
 const features = [
   {
-    icon: Target,
-    title: "Signal Driven ICP Search",
+    icon: FileCheck,
+    title: "Every new permit, the day it's filed",
     description:
-      "Perpetual actively identifies which companies are or moving towards a buying position based on",
-    signals: ["Project Signals", "Pain Signals", "Buying Readiness Signals", "Organizational Signals"],
+      "Perpetual monitors local permitting systems continuously and pulls every commercial and multifamily submission as it lands, filtered to the equipment you sell.",
     image: featurePipeline,
   },
   {
-    icon: Search,
-    title: "Real time scrapping & Intelligent Matching",
+    icon: ListChecks,
+    title: "The equipment each job calls for",
     description:
-      "Perpetual continuously analyzes operational and market signals to identify companies actively moving toward a buying decision.",
-    signalsIntro: "This includes signals such as:",
-    signals: [
-      "Technology Adoption",
-      "Project Expansion",
-      "Vendor Relationships",
-      "Operational Bottlenecks",
-      "Organizational Changes",
-      "Competitive Pressure",
-    ],
-    descriptionAfter:
-      "The result is a continuously updating pipeline of companies ranked by their likelihood to buy your product.",
+      "Work items for every trade: AC, ductwork, generators, fire protection. Plus square footage, occupancy, and where the plans sit in review. Qualify a project in thirty seconds.",
     image: featureSmb,
   },
   {
-    icon: TrendingUp,
-    title: "Continuous ICP Tracking",
+    icon: Contact,
+    title: "The contractor's name, license, and phone",
     description:
-      "Perpetual continuously tracks your target customers after they enter your pipeline surfacing:",
-    signals: ["new signals", "organizational changes", "buying indicators"],
-    signalsAfter: "as they happen.",
-    descriptionAfter:
-      "This allows sales teams to adapt outreach based on real-time account movement.",
+      "Every contractor on the job, listed by trade, with license number and phone pulled straight from the filing. The owner and permit contact included. Your rep dials the decision maker on day one.",
     image: featureDistributors,
   },
   {
-    icon: RefreshCw,
-    title: "Actionable Intelligence",
+    icon: BellRing,
+    title: "An alert when a spec reopens",
     description:
-      "Perpetual identifies the highest-value decision makers within an ICP and surfaces the operational context, buying signals, and strategic angles most relevant to each stakeholder.",
+      "A contractor swap or a plan revision means the equipment decision just reopened. Perpetual tracks every open project and flags it the same day it hits the county record.",
     image: featureDataloop,
   },
 ];
@@ -72,11 +56,11 @@ export const Features = () => {
           className="text-center max-w-3xl mx-auto mb-20"
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Real Time Intelligence on{" "}
-            <span className="text-gradient">who is ready to buy</span>
+            Buying Signals at Submission{" "}
+            <span className="text-gradient">— not at issuance</span>
           </h2>
           <p className="text-xl text-muted-foreground">
-            From signal detection to outreach, Perpetual gives your team real-time visibility into buying intent.
+            A filed permit means committed capital, stamped drawings, and weeks of plan review before any equipment is ordered. Perpetual reads that window continuously with everything from project scope, work items by trade, plan status, and every contractor on the job, license and phone included.
           </p>
         </motion.div>
 

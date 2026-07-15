@@ -1,20 +1,175 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Building2, Globe, Mail, Phone, User } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ArrowLeft, Building2, Check, CreditCard, Mail, User } from "lucide-react";
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 
+/** Swap when your Stripe Payment Link or Checkout URL is ready. */
+export const STRIPE_CHECKOUT_URL = "https://buy.stripe.com/your-checkout-link";
+
+/** Swap when your Cal.com embed is ready. */
+export const CAL_COM_URL = "https://cal.com/your-team/20min";
+
+const WHAT_YOU_SELL_OPTIONS = [
+  "Manufacturer",
+  "Distributor",
+  "Rep agency",
+  "Other",
+] as const;
+
+const SUBSCRIPTION_INCLUDES = [
+  "Full Miami-Dade permit feed, updated daily",
+  "Equipment specs mapped to each job",
+  "Contractor name, license, and phone",
+  "Alerts when a spec reopens",
+  "Founding rate locked for life",
+];
+
+type DemoFormData = {
+  name: string;
+  email: string;
+  company: string;
+  whatYouSell: string;
+};
+
+const DemoForm = ({
+  formData,
+  isSubmitting,
+  onChange,
+  onWhatYouSellChange,
+  onSubmit,
+  onBack,
+}: {
+  formData: DemoFormData;
+  isSubmitting: boolean;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onWhatYouSellChange: (value: string) => void;
+  onSubmit: (e: React.FormEvent) => void;
+  onBack: () => void;
+}) => (
+  <>
+    <div className="text-center mb-6">
+      <h3 className="text-xl font-semibold text-foreground">Book a 20 minute demo</h3>
+      <p className="mt-2 text-sm text-muted-foreground">
+        You&apos;ll see this week&apos;s Miami projects live on the call.
+      </p>
+    </div>
+
+    <form onSubmit={onSubmit} className="space-y-5">
+      <div className="space-y-2">
+        <Label htmlFor="name" className="text-foreground">
+          Name
+        </Label>
+        <div className="relative">
+          <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input
+            id="name"
+            name="name"
+            placeholder="Jane Smith"
+            value={formData.name}
+            onChange={onChange}
+            required
+            className="pl-10 bg-background/50 border-border/50 focus:border-primary"
+          />
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="email" className="text-foreground">
+          Work email
+        </Label>
+        <div className="relative">
+          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="jane@company.com"
+            value={formData.email}
+            onChange={onChange}
+            required
+            className="pl-10 bg-background/50 border-border/50 focus:border-primary"
+          />
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="company" className="text-foreground">
+          Company
+        </Label>
+        <div className="relative">
+          <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input
+            id="company"
+            name="company"
+            placeholder="Acme Equipment Co."
+            value={formData.company}
+            onChange={onChange}
+            required
+            className="pl-10 bg-background/50 border-border/50 focus:border-primary"
+          />
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="whatYouSell" className="text-foreground">
+          What do you sell
+        </Label>
+        <Select value={formData.whatYouSell} onValueChange={onWhatYouSellChange} required>
+          <SelectTrigger id="whatYouSell" className="bg-background/50 border-border/50">
+            <SelectValue placeholder="Select one" />
+          </SelectTrigger>
+          <SelectContent>
+            {WHAT_YOU_SELL_OPTIONS.map((option) => (
+              <SelectItem key={option} value={option}>
+                {option}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <Button
+        type="submit"
+        variant="hero"
+        size="lg"
+        className="w-full mt-2"
+        disabled={isSubmitting || !formData.whatYouSell}
+      >
+        {isSubmitting ? "Submitting..." : "Book my demo"}
+      </Button>
+    </form>
+
+    <Button
+      type="button"
+      variant="ghost"
+      size="sm"
+      className="w-full mt-4 text-muted-foreground"
+      onClick={onBack}
+    >
+      <ArrowLeft className="w-4 h-4 mr-2" />
+      Back to subscribe
+    </Button>
+  </>
+);
+
 export const Pricing = () => {
-  const [formData, setFormData] = useState({
+  const [showDemoForm, setShowDemoForm] = useState(false);
+  const [formData, setFormData] = useState<DemoFormData>({
     name: "",
     email: "",
-    phone: "",
     company: "",
-    website: "",
-    description: "",
+    whatYouSell: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -28,24 +183,17 @@ export const Pricing = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate form submission
+
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    
+
     toast({
-      title: "Request Received",
-      description: "We'll be in touch within 24 hours to discuss your needs.",
+      title: "Demo request received",
+      description: "We'll reach out shortly to schedule your Miami beta walkthrough.",
     });
-    
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      company: "",
-      website: "",
-      description: "",
-    });
+
+    setFormData({ name: "", email: "", company: "", whatYouSell: "" });
     setIsSubmitting(false);
+    setShowDemoForm(false);
   };
 
   return (
@@ -56,158 +204,117 @@ export const Pricing = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center max-w-3xl mx-auto mb-12"
         >
           <span className="text-primary text-sm font-medium tracking-wider uppercase">
-            Enterprise Solutions
+            Miami Beta
           </span>
           <h2 className="text-4xl md:text-5xl font-bold mt-4 mb-6">
-            Choose Precision{" "}
-            <span className="text-gradient">over Volume</span>
+            Live in Miami.{" "}
+            <span className="text-gradient">Founding pricing.</span>
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            We work exclusively with enterprise clients to build and train 
-            custom AI models tailored to your unique ICP discovery needs.
+          <p className="text-muted-foreground text-lg leading-relaxed">
+            We launched in Miami Dade County first because it publishes the richest plan level data
+            in Florida. Founding customers get the full feed while we expand across the state, and
+            their price never moves.
           </p>
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.5, delay: 0.15 }}
           viewport={{ once: true }}
           className="max-w-xl mx-auto"
         >
           <Card className="glass-card border-border shadow-card">
-            <CardHeader className="text-center pb-2">
-              <div className="mx-auto mb-4 w-14 h-14 rounded-xl bg-secondary flex items-center justify-center">
-                <Building2 className="w-7 h-7 text-primary" />
-              </div>
-              <CardTitle className="text-2xl">Get in Touch</CardTitle>
-              <CardDescription className="text-muted-foreground">
-                Tell us about your company and we'll reach out to discuss how we can help.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <div className="grid gap-5 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="name" className="text-foreground">
-                      Full Name
-                    </Label>
-                    <div className="relative">
-                      <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input
-                        id="name"
-                        name="name"
-                        placeholder="John Doe"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required
-                        className="pl-10 bg-background/50 border-border/50 focus:border-primary"
-                      />
+            <CardContent className="pt-8 pb-8">
+              <AnimatePresence mode="wait">
+                {showDemoForm ? (
+                  <motion.div
+                    key="demo-form"
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -12 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    <DemoForm
+                      formData={formData}
+                      isSubmitting={isSubmitting}
+                      onChange={handleChange}
+                      onWhatYouSellChange={(value) =>
+                        setFormData((prev) => ({ ...prev, whatYouSell: value }))
+                      }
+                      onSubmit={handleSubmit}
+                      onBack={() => setShowDemoForm(false)}
+                    />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="subscribe"
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -12 }}
+                    transition={{ duration: 0.25 }}
+                    className="space-y-6"
+                  >
+                    <div className="text-center">
+                      <p className="text-sm font-medium uppercase tracking-wider text-primary">
+                        Miami Beta Founding
+                      </p>
+                      <div className="mt-3 flex items-baseline justify-center gap-1">
+                        <span className="text-5xl font-bold text-foreground">$399</span>
+                        <span className="text-muted-foreground">/ month</span>
+                      </div>
+                      <p className="mt-2 text-sm text-muted-foreground">
+                        Billed monthly. Cancel anytime.
+                      </p>
                     </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email" className="text-foreground">
-                      Email Address
-                    </Label>
+
+                    <ul className="space-y-3">
+                      {SUBSCRIPTION_INCLUDES.map((item) => (
+                        <li key={item} className="flex items-start gap-3 text-sm text-foreground">
+                          <Check className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <Button variant="hero" size="lg" className="w-full" asChild>
+                      <a
+                        href={STRIPE_CHECKOUT_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <CreditCard className="w-4 h-4 mr-2" />
+                        Start subscription
+                      </a>
+                    </Button>
+
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input
-                        id="email"
-                        name="email"
-                        type="email"
-                        placeholder="john@company.com"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                        className="pl-10 bg-background/50 border-border/50 focus:border-primary"
-                      />
+                      <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t border-border" />
+                      </div>
+                      <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-card px-2 text-muted-foreground">or</span>
+                      </div>
                     </div>
-                  </div>
-                </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="phone" className="text-foreground">
-                    Phone Number
-                  </Label>
-                  <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                      id="phone"
-                      name="phone"
-                      type="tel"
-                      placeholder="+1 (555) 000-0000"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      className="pl-10 bg-background/50 border-border/50 focus:border-primary"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="company" className="text-foreground">
-                    Company Name
-                  </Label>
-                  <div className="relative">
-                    <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                      id="company"
-                      name="company"
-                      placeholder="Acme Corporation"
-                      value={formData.company}
-                      onChange={handleChange}
-                      required
-                      className="pl-10 bg-background/50 border-border/50 focus:border-primary"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="website" className="text-foreground">
-                    Company Website
-                  </Label>
-                  <div className="relative">
-                    <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                      id="website"
-                      name="website"
-                      type="url"
-                      placeholder="https://company.com"
-                      value={formData.website}
-                      onChange={handleChange}
-                      required
-                      className="pl-10 bg-background/50 border-border/50 focus:border-primary"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="description" className="text-foreground">
-                    Brief Description
-                  </Label>
-                  <textarea
-                    id="description"
-                    name="description"
-                    placeholder="Tell us about your needs..."
-                    value={formData.description}
-                    onChange={handleChange as any}
-                    rows={3}
-                    className="flex w-full rounded-md border border-border/50 bg-background/50 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:border-primary min-h-[80px]"
-                  />
-                </div>
-
-                <Button
-                  type="submit"
-                  variant="hero"
-                  size="lg"
-                  className="w-full mt-2"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? "Submitting..." : "Request a Consultation"}
-                </Button>
-              </form>
+                    <Button
+                      type="button"
+                      variant="heroOutline"
+                      size="lg"
+                      className="w-full"
+                      onClick={() => setShowDemoForm(true)}
+                    >
+                      Book a 20 minute demo
+                    </Button>
+                    <p className="text-center text-sm text-muted-foreground -mt-2">
+                      You&apos;ll see this week&apos;s Miami projects live on the call.
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </CardContent>
           </Card>
         </motion.div>

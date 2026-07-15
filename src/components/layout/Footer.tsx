@@ -1,40 +1,46 @@
-import { motion } from "framer-motion";
 import logo from "@/assets/logo.png";
 
 const footerLinks = {
-  Product: ["Features", "Pricing", "Integrations", "API"],
-  Company: ["About", "Blog", "Careers", "Press"],
-  Resources: ["Documentation", "Help Center", "Community", "Status"],
-  Legal: ["Privacy", "Terms", "Security", "Cookies"],
+  Product: [
+    { label: "Features", href: "#features" },
+    { label: "Pricing", href: "#pricing" },
+  ],
+  Company: [
+    { label: "About", href: "#" },
+    { label: "Contact", href: "#pricing" },
+  ],
+  Legal: [
+    { label: "Privacy", href: "#" },
+    { label: "Terms", href: "#" },
+  ],
 };
 
 export const Footer = () => {
   return (
     <footer className="py-16 bg-card border-t border-border">
       <div className="container mx-auto px-6">
-        <div className="grid md:grid-cols-6 gap-12 mb-12">
-          {/* Brand */}
-          <div className="md:col-span-2">
+        <div className="grid md:grid-cols-4 gap-12 mb-12">
+          <div>
             <div className="mb-4">
               <img src={logo} alt="Perpetual" className="h-8 w-auto rounded-sm invert" />
             </div>
-            <p className="text-muted-foreground max-w-xs">
-              AI-powered ICP discovery and sales automation for modern B2B companies.
+            <p className="text-muted-foreground max-w-xs text-sm leading-relaxed">
+              Permit intelligence for the teams that sell equipment into commercial construction.
+              We read building permits the day they&apos;re filed, so equipment providers call first.
             </p>
           </div>
 
-          {/* Links */}
           {Object.entries(footerLinks).map(([category, links]) => (
             <div key={category}>
               <h4 className="font-semibold text-foreground mb-4">{category}</h4>
               <ul className="space-y-3">
                 {links.map((link) => (
-                  <li key={link}>
+                  <li key={link.label}>
                     <a
-                      href="#"
+                      href={link.href}
                       className="text-muted-foreground hover:text-foreground transition-colors text-sm"
                     >
-                      {link}
+                      {link.label}
                     </a>
                   </li>
                 ))}
@@ -43,22 +49,10 @@ export const Footer = () => {
           ))}
         </div>
 
-        {/* Bottom */}
-        <div className="pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="pt-8 border-t border-border">
           <p className="text-sm text-muted-foreground">
             © 2026 Perpetual. All rights reserved.
           </p>
-          <div className="flex items-center gap-6">
-            <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-              Twitter
-            </a>
-            <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-              LinkedIn
-            </a>
-            <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-              GitHub
-            </a>
-          </div>
         </div>
       </div>
     </footer>

@@ -32,7 +32,7 @@ export const Hero = () => {
           >
             <span className="text-foreground">Buying Intelligence for</span>
             <br />
-            <span className="text-gradient">Modern Outbound Sales</span>
+            <span className="text-gradient">Equipment Providers</span>
           </motion.h1>
 
           {/* Subheadline */}
@@ -42,7 +42,7 @@ export const Hero = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="text-xl text-muted-foreground max-w-2xl mx-auto mb-10"
           >
-            Find your next buyer using real-time buying signals and actionable intelligence.
+            Find your next buyer, before the purchase order exists
           </motion.p>
 
           {/* Chatbot Preview */}
