@@ -14,8 +14,9 @@ import { ArrowLeft, Building2, Check, CreditCard, Mail, User } from "lucide-reac
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 
-/** Swap when your Stripe Payment Link or Checkout URL is ready. */
-export const STRIPE_CHECKOUT_URL = "https://buy.stripe.com/your-checkout-link";
+/** Swap when your Stripe Payment Links are ready. */
+export const STRIPE_CHECKOUT_URL_MONTHLY = "https://buy.stripe.com/your-checkout-link-monthly";
+export const STRIPE_CHECKOUT_URL_ANNUAL = "https://buy.stripe.com/your-checkout-link-annual";
 
 /** Swap when your Cal.com embed is ready. */
 export const CAL_COM_URL = "https://cal.com/your-team/20min";
@@ -34,6 +35,21 @@ const SUBSCRIPTION_INCLUDES = [
   "Alerts when a spec reopens",
   "Founding rate locked for life",
 ];
+
+type BillingPeriod = "monthly" | "annual";
+
+const PRICING = {
+  monthly: {
+    amount: 399,
+    checkoutUrl: STRIPE_CHECKOUT_URL_MONTHLY,
+    billingNote: "Billed monthly. Cancel anytime.",
+  },
+  annual: {
+    amount: 299,
+    checkoutUrl: STRIPE_CHECKOUT_URL_ANNUAL,
+    billingNote: "Billed annually. Cancel anytime.",
+  },
+} as const;
 
 type DemoFormData = {
   name: string;
@@ -164,6 +180,7 @@ const DemoForm = ({
 );
 
 export const Pricing = () => {
+  const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>("annual");
   const [showDemoForm, setShowDemoForm] = useState(false);
   const [formData, setFormData] = useState<DemoFormData>({
     name: "",
@@ -172,6 +189,8 @@ export const Pricing = () => {
     whatYouSell: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const pricing = PRICING[billingPeriod];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
@@ -227,6 +246,43 @@ export const Pricing = () => {
           viewport={{ once: true }}
           className="max-w-xl mx-auto"
         >
+          {!showDemoForm && (
+            <div className="flex justify-center mb-6">
+              <div
+                role="tablist"
+                aria-label="Billing period"
+                className="inline-flex items-center rounded-lg border border-border bg-muted/60 p-1"
+              >
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={billingPeriod === "annual"}
+                  onClick={() => setBillingPeriod("annual")}
+                  className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                    billingPeriod === "annual"
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Annual
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={billingPeriod === "monthly"}
+                  onClick={() => setBillingPeriod("monthly")}
+                  className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                    billingPeriod === "monthly"
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Monthly
+                </button>
+              </div>
+            </div>
+          )}
+
           <Card className="glass-card border-border shadow-card">
             <CardContent className="pt-8 pb-8">
               <AnimatePresence mode="wait">
@@ -263,12 +319,12 @@ export const Pricing = () => {
                         Miami Beta Founding
                       </p>
                       <div className="mt-3 flex items-baseline justify-center gap-1">
-                        <span className="text-5xl font-bold text-foreground">$399</span>
-                        <span className="text-muted-foreground">/ month</span>
+                        <span className="text-5xl font-bold text-foreground">
+                          ${pricing.amount}
+                        </span>
+                        <span className="text-muted-foreground">/mo</span>
                       </div>
-                      <p className="mt-2 text-sm text-muted-foreground">
-                        Billed monthly. Cancel anytime.
-                      </p>
+                      <p className="mt-2 text-sm text-muted-foreground">{pricing.billingNote}</p>
                     </div>
 
                     <ul className="space-y-3">
@@ -282,12 +338,12 @@ export const Pricing = () => {
 
                     <Button variant="hero" size="lg" className="w-full" asChild>
                       <a
-                        href={STRIPE_CHECKOUT_URL}
+                        href={pricing.checkoutUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
                         <CreditCard className="w-4 h-4 mr-2" />
-                        Start subscription
+                        Start 14 day free trial
                       </a>
                     </Button>
 
