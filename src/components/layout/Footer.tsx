@@ -1,17 +1,18 @@
+import { Link } from "react-router-dom";
 import logo from "@/assets/logo.png";
 
 const footerLinks = {
   Product: [
-    { label: "Features", href: "#features" },
-    { label: "Pricing", href: "#pricing" },
+    { label: "Features", href: "/#features", internal: false },
+    { label: "Pricing", href: "/#pricing", internal: false },
   ],
   Company: [
-    { label: "About", href: "#" },
-    { label: "Contact", href: "#pricing" },
+    { label: "About", href: "/#", internal: false },
+    { label: "Contact", href: "/contact", internal: true },
   ],
   Legal: [
-    { label: "Privacy", href: "#" },
-    { label: "Terms", href: "#" },
+    { label: "Privacy", href: "/privacy", internal: true },
+    { label: "Terms", href: "/terms", internal: true },
   ],
 };
 
@@ -36,12 +37,21 @@ export const Footer = () => {
               <ul className="space-y-3">
                 {links.map((link) => (
                   <li key={link.label}>
-                    <a
-                      href={link.href}
-                      className="text-muted-foreground hover:text-foreground transition-colors text-sm"
-                    >
-                      {link.label}
-                    </a>
+                    {link.internal ? (
+                      <Link
+                        to={link.href}
+                        className="text-muted-foreground hover:text-foreground transition-colors text-sm"
+                      >
+                        {link.label}
+                      </Link>
+                    ) : (
+                      <a
+                        href={link.href}
+                        className="text-muted-foreground hover:text-foreground transition-colors text-sm"
+                      >
+                        {link.label}
+                      </a>
+                    )}
                   </li>
                 ))}
               </ul>
