@@ -35,6 +35,12 @@ const rows: { label: string; dodge: CellValue; shovels: CellValue; perpetual: Ce
     perpetual: true,
   },
   {
+    label: "Names, emails, and phones",
+    dodge: false,
+    shovels: false,
+    perpetual: true,
+  },
+  {
     label: "Price",
     dodge: "$699/month",
     shovels: "$599/month",

@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
-import { 
-  FileCheck, 
-  ListChecks, 
-  Contact, 
-  BellRing 
+import {
+  Eye,
+  FileCheck,
+  Contact,
+  Target,
 } from "lucide-react";
 import featurePipeline from "@/assets/feature-pipeline.png";
 import featureSmb from "@/assets/feature-smb.png";
@@ -15,28 +15,28 @@ const features = [
     icon: FileCheck,
     title: "Every new permit, the day it's filed",
     description:
-      "Perpetual monitors local permitting systems continuously and pulls every commercial and multifamily submission as it lands, filtered to the equipment you sell.",
+      "Perpetual monitors local permitting systems continuously and pulls every commercial and multifamily submission as it lands, filtered to the equipment you sell. Not a weekly batch or a monthly report.",
     image: featurePipeline,
   },
   {
-    icon: ListChecks,
-    title: "The equipment each job calls for",
+    icon: Eye,
+    title: "The jobs outside your network",
     description:
-      "Work items for every trade: AC, ductwork, generators, fire protection. Plus square footage, occupancy, and where the plans sit in review. Qualify a project in thirty seconds.",
+      "Most suppliers hear about work through relationships, which means most projects go unseen. Perpetual surfaces every filed project in your market, including the ones no relationship would have brought you.",
     image: featureSmb,
   },
   {
     icon: Contact,
     title: "The contractor's name, license, and phone",
     description:
-      "Every contractor on the job, listed by trade, with license number and phone pulled straight from the filing. The owner and permit contact included. Your rep dials the decision maker on day one.",
+      "Every contractor on the job, listed by trade, with license number and phone pulled straight from the filing. The property owner and permit contact included. Your rep dials the decision maker on day one.",
     image: featureDistributors,
   },
   {
-    icon: BellRing,
-    title: "An alert when a spec reopens",
+    icon: Target,
+    title: "Ahead of the bid, ahead of the race to the bottom",
     description:
-      "A contractor swap or a plan revision means the equipment decision just reopened. Perpetual tracks every open project and flags it the same day it hits the county record.",
+      "Once a job goes to bid, every supplier sees it at the same moment and price becomes the only lever. Perpetual reaches you while the equipment decision is still open, at a margin you set.",
     image: featureDataloop,
   },
 ];

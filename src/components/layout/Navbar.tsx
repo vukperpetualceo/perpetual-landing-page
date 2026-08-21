@@ -7,7 +7,7 @@ import logo from "@/assets/logo.png";
 const navLinks = [
   { label: "Features", href: "#features" },
   { label: "Comparison", href: "#how-it-works" },
-  { label: "Miami Beta", href: "#pricing" },
+  { label: "Pricing", href: "#pricing" },
 ];
 
 export const Navbar = () => {

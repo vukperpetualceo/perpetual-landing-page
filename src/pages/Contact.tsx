@@ -27,7 +27,7 @@ const Contact = () => {
 
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-3">Contact</h1>
           <p className="text-muted-foreground mb-10 leading-relaxed">
-            Questions about Perpetual, Miami Beta, or your account? Reach us directly.
+            Questions about Perpetual, pricing, or your account? Reach us directly.
           </p>
 
           <div className="rounded-lg border border-border bg-card p-6 md:p-8 space-y-6">

@@ -14,10 +14,6 @@ import { ArrowLeft, Building2, Check, CreditCard, Mail, User } from "lucide-reac
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 
-/** Swap when your Stripe Payment Links are ready. */
-export const STRIPE_CHECKOUT_URL_MONTHLY = "https://buy.stripe.com/your-checkout-link-monthly";
-export const STRIPE_CHECKOUT_URL_ANNUAL = "https://buy.stripe.com/your-checkout-link-annual";
-
 /** Swap when your Cal.com embed is ready. */
 export const CAL_COM_URL = "https://cal.com/your-team/20min";
 
@@ -28,28 +24,65 @@ const WHAT_YOU_SELL_OPTIONS = [
   "Other",
 ] as const;
 
-const SUBSCRIPTION_INCLUDES = [
-  "Full Miami-Dade permit feed, updated daily",
+type BillingPeriod = "monthly" | "annual";
+type StateCode = "FL" | "TX" | "VA" | "NC";
+
+type StatePlan = {
+  code: StateCode;
+  name: string;
+  monthly: number;
+  annual: number;
+  checkoutMonthly: string;
+  checkoutAnnual: string;
+  coverage: string;
+};
+
+/** Edit monthly/annual amounts and Stripe links per state here. */
+export const STATE_PLANS: StatePlan[] = [
+  {
+    code: "FL",
+    name: "Florida",
+    monthly: 399,
+    annual: 299,
+    checkoutMonthly: "https://buy.stripe.com/your-fl-monthly",
+    checkoutAnnual: "https://buy.stripe.com/your-fl-annual",
+    coverage: "Full Florida permit feed, updated daily",
+  },
+  {
+    code: "TX",
+    name: "Texas",
+    monthly: 399,
+    annual: 299,
+    checkoutMonthly: "https://buy.stripe.com/your-tx-monthly",
+    checkoutAnnual: "https://buy.stripe.com/your-tx-annual",
+    coverage: "Full Texas permit feed, updated daily",
+  },
+  {
+    code: "VA",
+    name: "Virginia",
+    monthly: 399,
+    annual: 299,
+    checkoutMonthly: "https://buy.stripe.com/your-va-monthly",
+    checkoutAnnual: "https://buy.stripe.com/your-va-annual",
+    coverage: "Full Virginia permit feed, updated daily",
+  },
+  {
+    code: "NC",
+    name: "North Carolina",
+    monthly: 399,
+    annual: 299,
+    checkoutMonthly: "https://buy.stripe.com/your-nc-monthly",
+    checkoutAnnual: "https://buy.stripe.com/your-nc-annual",
+    coverage: "Full North Carolina permit feed, updated daily",
+  },
+];
+
+const SHARED_INCLUDES = [
   "Equipment specs mapped to each job",
   "Contractor name, license, and phone",
   "Alerts when a spec reopens",
   "Founding rate locked for life",
 ];
-
-type BillingPeriod = "monthly" | "annual";
-
-const PRICING = {
-  monthly: {
-    amount: 399,
-    checkoutUrl: STRIPE_CHECKOUT_URL_MONTHLY,
-    billingNote: "Billed monthly. Cancel anytime.",
-  },
-  annual: {
-    amount: 299,
-    checkoutUrl: STRIPE_CHECKOUT_URL_ANNUAL,
-    billingNote: "Billed annually. Cancel anytime.",
-  },
-} as const;
 
 type DemoFormData = {
   name: string;
@@ -61,6 +94,7 @@ type DemoFormData = {
 const DemoForm = ({
   formData,
   isSubmitting,
+  stateName,
   onChange,
   onWhatYouSellChange,
   onSubmit,
@@ -68,6 +102,7 @@ const DemoForm = ({
 }: {
   formData: DemoFormData;
   isSubmitting: boolean;
+  stateName: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onWhatYouSellChange: (value: string) => void;
   onSubmit: (e: React.FormEvent) => void;
@@ -77,7 +112,7 @@ const DemoForm = ({
     <div className="text-center mb-6">
       <h3 className="text-xl font-semibold text-foreground">Book a 20 minute demo</h3>
       <p className="mt-2 text-sm text-muted-foreground">
-        You&apos;ll see this week&apos;s Miami projects live on the call.
+        You&apos;ll see this week&apos;s {stateName} projects live on the call.
       </p>
     </div>
 
@@ -180,7 +215,8 @@ const DemoForm = ({
 );
 
 export const Pricing = () => {
-  const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>("annual");
+  const [selectedState, setSelectedState] = useState<StateCode>("FL");
+  const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>("monthly");
   const [showDemoForm, setShowDemoForm] = useState(false);
   const [formData, setFormData] = useState<DemoFormData>({
     name: "",
@@ -190,7 +226,15 @@ export const Pricing = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const pricing = PRICING[billingPeriod];
+  const plan = STATE_PLANS.find((s) => s.code === selectedState) ?? STATE_PLANS[0];
+  const amount = billingPeriod === "monthly" ? plan.monthly : plan.annual;
+  const checkoutUrl =
+    billingPeriod === "monthly" ? plan.checkoutMonthly : plan.checkoutAnnual;
+  const billingNote =
+    billingPeriod === "monthly"
+      ? "Billed monthly. Cancel anytime."
+      : "Billed annually. Cancel anytime.";
+  const includes = [plan.coverage, ...SHARED_INCLUDES];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
@@ -207,7 +251,7 @@ export const Pricing = () => {
 
     toast({
       title: "Demo request received",
-      description: "We'll reach out shortly to schedule your Miami beta walkthrough.",
+      description: `We'll reach out shortly to walk through the ${plan.name} feed.`,
     });
 
     setFormData({ name: "", email: "", company: "", whatYouSell: "" });
@@ -226,16 +270,17 @@ export const Pricing = () => {
           className="text-center max-w-3xl mx-auto mb-12"
         >
           <span className="text-primary text-sm font-medium tracking-wider uppercase">
-            Miami Beta
+            Live in 4 states
           </span>
           <h2 className="text-4xl md:text-5xl font-bold mt-4 mb-6">
-            Live in Miami.{" "}
+            FL, TX, VA, NC.
+            <br />
             <span className="text-gradient">Founding pricing.</span>
           </h2>
           <p className="text-muted-foreground text-lg leading-relaxed">
-            We launched in Miami Dade County first because it publishes the richest plan level data
-            in Florida. Founding customers get the full feed while we expand across the state, and
-            their price never moves.
+            Perpetual is live across Florida, Texas, Virginia, and North Carolina. Choose your state
+            on the plan — founding customers get the full feed for that market, and their price never
+            moves.
           </p>
         </motion.div>
 
@@ -265,6 +310,7 @@ export const Pricing = () => {
                   }`}
                 >
                   Annual
+                  <span className="ml-1.5 text-xs font-medium text-primary">Save 25%</span>
                 </button>
                 <button
                   type="button"
@@ -297,6 +343,7 @@ export const Pricing = () => {
                     <DemoForm
                       formData={formData}
                       isSubmitting={isSubmitting}
+                      stateName={plan.name}
                       onChange={handleChange}
                       onWhatYouSellChange={(value) =>
                         setFormData((prev) => ({ ...prev, whatYouSell: value }))
@@ -307,7 +354,7 @@ export const Pricing = () => {
                   </motion.div>
                 ) : (
                   <motion.div
-                    key="subscribe"
+                    key={billingPeriod}
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -12 }}
@@ -316,19 +363,38 @@ export const Pricing = () => {
                   >
                     <div className="text-center">
                       <p className="text-sm font-medium uppercase tracking-wider text-primary">
-                        Miami Beta Founding
+                        Founding plan
                       </p>
                       <div className="mt-3 flex items-baseline justify-center gap-1">
-                        <span className="text-5xl font-bold text-foreground">
-                          ${pricing.amount}
-                        </span>
+                        <span className="text-5xl font-bold text-foreground">${amount}</span>
                         <span className="text-muted-foreground">/mo</span>
                       </div>
-                      <p className="mt-2 text-sm text-muted-foreground">{pricing.billingNote}</p>
+                      <p className="mt-2 text-sm text-muted-foreground">{billingNote}</p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="state" className="text-foreground">
+                        State
+                      </Label>
+                      <Select
+                        value={selectedState}
+                        onValueChange={(value) => setSelectedState(value as StateCode)}
+                      >
+                        <SelectTrigger id="state" className="bg-background/50 border-border/50">
+                          <SelectValue placeholder="Select a state" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {STATE_PLANS.map((state) => (
+                            <SelectItem key={state.code} value={state.code}>
+                              {state.name} ({state.code})
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     <ul className="space-y-3">
-                      {SUBSCRIPTION_INCLUDES.map((item) => (
+                      {includes.map((item) => (
                         <li key={item} className="flex items-start gap-3 text-sm text-foreground">
                           <Check className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
                           <span>{item}</span>
@@ -337,11 +403,7 @@ export const Pricing = () => {
                     </ul>
 
                     <Button variant="hero" size="lg" className="w-full" asChild>
-                      <a
-                        href={pricing.checkoutUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
+                      <a href={checkoutUrl} target="_blank" rel="noopener noreferrer">
                         <CreditCard className="w-4 h-4 mr-2" />
                         Start 14 day free trial
                       </a>
@@ -366,13 +428,20 @@ export const Pricing = () => {
                       Book a 20 minute demo
                     </Button>
                     <p className="text-center text-sm text-muted-foreground -mt-2">
-                      You&apos;ll see this week&apos;s Miami projects live on the call.
+                      You&apos;ll see this week&apos;s {plan.name} projects live on the call.
                     </p>
                   </motion.div>
                 )}
               </AnimatePresence>
             </CardContent>
           </Card>
+
+          {!showDemoForm && (
+            <p className="mt-6 text-center text-sm text-muted-foreground">
+              14-day free trial on every plan. Card required at checkout — you won&apos;t be charged
+              until the trial ends.
+            </p>
+          )}
         </motion.div>
       </div>
     </section>
