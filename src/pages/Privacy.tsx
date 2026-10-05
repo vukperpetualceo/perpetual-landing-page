@@ -7,7 +7,7 @@ const Privacy = () => {
   useEffect(() => {
     document.title = "Privacy Policy | Perpetual";
     return () => {
-      document.title = "Perpetual | Buying Intelligence for Equipment Providers";
+      document.title = "Perpetual | Virginia Building Permits, the Day They're Filed";
     };
   }, []);
 

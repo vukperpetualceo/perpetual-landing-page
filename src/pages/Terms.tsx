@@ -7,7 +7,7 @@ const Terms = () => {
   useEffect(() => {
     document.title = "Terms of Service | Perpetual";
     return () => {
-      document.title = "Perpetual | Buying Intelligence for Equipment Providers";
+      document.title = "Perpetual | Virginia Building Permits, the Day They're Filed";
     };
   }, []);
 

@@ -1,133 +1,294 @@
-import { motion } from "framer-motion";
+import { useRef, useState } from "react";
 import {
-  Eye,
-  FileCheck,
-  Contact,
-  Target,
-} from "lucide-react";
+  AnimatePresence,
+  motion,
+  useMotionValueEvent,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+  type MotionValue,
+} from "framer-motion";
+import { Building2, Contact, FileCheck, FileText } from "lucide-react";
 import featurePipeline from "@/assets/feature-pipeline.png";
 import featureSmb from "@/assets/feature-smb.png";
 import featureDistributors from "@/assets/feature-distributors.png";
 import featureDataloop from "@/assets/feature-dataloop.png";
 
-const features = [
+type FeatureMedia = {
+  /** Still frame. Shown until a video is supplied, then used as the video poster. */
+  poster: string;
+  /** Muted, looping screen recording. Drop in a /public path or hosted .mp4 / .webm. */
+  video?: string;
+};
+
+type Feature = {
+  icon: typeof Building2;
+  title: string;
+  description: string;
+  media: FeatureMedia;
+};
+
+const features: Feature[] = [
   {
-    icon: FileCheck,
-    title: "Every new permit, the day it's filed",
+    icon: Building2,
+    title: "New jobs, before anybody's bidding",
     description:
-      "Perpetual monitors local permitting systems continuously and pulls every commercial and multifamily submission as it lands, filtered to the equipment you sell. Not a weekly batch or a monthly report.",
-    image: featurePipeline,
+      "Every new commercial job in your area the day the first permit hits the county. Open it and you get each building on the site, the address, what's going up, and what it's worth.",
+    // Video: the project list, then one project expanded into its individual buildings.
+    media: { poster: featurePipeline },
   },
   {
-    icon: Eye,
-    title: "The jobs outside your network",
+    icon: FileCheck,
+    title: "Every permit pulled, the day it's filed",
     description:
-      "Most suppliers hear about work through relationships, which means most projects go unseen. Perpetual surfaces every filed project in your market, including the ones no relationship would have brought you.",
-    image: featureSmb,
+      "Mechanical, electrical, plumbing, fire, each one the day it's pulled. Open any permit for the full filing, where it sits in review, and what the work actually is.",
+    // Video: all permits under one building, then zoom in on a single permit.
+    media: { poster: featureSmb },
   },
   {
     icon: Contact,
-    title: "The contractor's name, license, and phone",
+    title: "Who's running the job",
     description:
-      "Every contractor on the job, listed by trade, with license number and phone pulled straight from the filing. The property owner and permit contact included. Your rep dials the decision maker on day one.",
-    image: featureDistributors,
+      "The GC, the owner, and the subs, with names and phone numbers off the filing. You call the guy who makes the call, not the front desk.",
+    // Video: the contacts panel on a permit, GC and owner highlighted.
+    media: { poster: featureDistributors },
   },
   {
-    icon: Target,
-    title: "Ahead of the bid, ahead of the race to the bottom",
+    icon: FileText,
+    title: "The plans and specs",
     description:
-      "Once a job goes to bid, every supplier sees it at the same moment and price becomes the only lever. Perpetual reaches you while the equipment decision is still open, at a margin you set.",
-    image: featureDataloop,
+      "Where the county posts them, the plan set sits right on the permit. Pull up the schedule and see the equipment before you dial.",
+    // Video: opening a plan set from a permit.
+    // TODO: confirm with Andrii what is shown and how consistently before this copy ships.
+    // "work plan" from the original brief is not confirmed county terminology; using "plan set".
+    media: { poster: featureDataloop },
   },
 ];
 
-export const Features = () => {
+/** Scroll distance devoted to each card, as a share of the viewport height.
+ *  Raise it to slow the sequence down, lower it to speed it up. */
+const SCROLL_VH_PER_CARD = 150;
+
+const SectionHeader = () => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ duration: 0.5 }}
+    className="mx-auto max-w-3xl text-center"
+  >
+    <h2 className="mb-6 text-4xl font-bold md:text-5xl">
+      Everything on the job, <span className="text-gradient">the day it&apos;s filed</span>
+    </h2>
+    <p className="text-xl text-muted-foreground">
+      The job, the permits, who&apos;s running it, and the plans. Straight off the county filing,
+      not weeks later.
+    </p>
+  </motion.div>
+);
+
+const FeatureMediaFrame = ({
+  media,
+  alt,
+  className = "",
+}: {
+  media: FeatureMedia;
+  alt: string;
+  className?: string;
+}) => (
+  <div
+    className={`overflow-hidden rounded-2xl border border-border bg-gradient-card shadow-card ${className}`}
+  >
+    {media.video ? (
+      <video
+        src={media.video}
+        poster={media.poster}
+        autoPlay
+        muted
+        loop
+        playsInline
+        aria-label={alt}
+        className="h-full w-full object-cover object-left-top"
+      />
+    ) : (
+      <img src={media.poster} alt={alt} className="h-full w-full object-cover object-left-top" />
+    )}
+  </div>
+);
+
+/** The enlarged card. Shown one at a time inside the pinned frame. */
+const FeaturePanel = ({ feature, index }: { feature: Feature; index: number }) => (
+  <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-14">
+    <FeatureMediaFrame
+      media={feature.media}
+      alt={feature.title}
+      className="aspect-video max-h-[34vh] w-full lg:order-2 lg:max-h-none"
+    />
+
+    <div className="space-y-4 lg:order-1 lg:space-y-6">
+      <div className="flex items-center gap-3">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-secondary">
+          <feature.icon className="h-6 w-6 text-primary" />
+        </div>
+        <span className="text-sm font-semibold tabular-nums tracking-wider text-muted-foreground">
+          {String(index + 1).padStart(2, "0")} / {String(features.length).padStart(2, "0")}
+        </span>
+      </div>
+
+      <h3 className="text-3xl font-bold leading-tight text-foreground md:text-4xl lg:text-5xl">
+        {feature.title}
+      </h3>
+      <p className="max-w-xl text-lg leading-relaxed text-muted-foreground lg:text-xl">
+        {feature.description}
+      </p>
+    </div>
+  </div>
+);
+
+/** One segment of the progress bar. Fills as you scroll through its card. */
+const RailSegment = ({
+  progress,
+  index,
+  isActive,
+  label,
+  onSelect,
+}: {
+  progress: MotionValue<number>;
+  index: number;
+  isActive: boolean;
+  label: string;
+  onSelect: (index: number) => void;
+}) => {
+  const scaleX = useTransform(progress, (p) =>
+    Math.min(1, Math.max(0, p * features.length - index)),
+  );
+
   return (
-    <section id="features" className="pt-8 pb-24 bg-background relative border-y border-border/70">
+    <button
+      type="button"
+      onClick={() => onSelect(index)}
+      aria-label={`Go to: ${label}`}
+      aria-current={isActive}
+      className="group flex-1 py-2"
+    >
+      <span className="relative block h-1.5 w-full overflow-hidden rounded-full bg-border transition-colors group-hover:bg-foreground/25">
+        <motion.span
+          style={{ scaleX }}
+          className="absolute inset-0 origin-left rounded-full bg-foreground"
+        />
+      </span>
+    </button>
+  );
+};
+
+/** Progress bar across the whole sequence, so the length of the scroll is visible. */
+const ScrollProgress = ({
+  progress,
+  active,
+  onSelect,
+}: {
+  progress: MotionValue<number>;
+  active: number;
+  onSelect: (index: number) => void;
+}) => (
+  <div className="mx-auto flex max-w-xl flex-col items-center gap-2">
+    <div className="flex w-full items-center gap-2">
+      {features.map((feature, index) => (
+        <RailSegment
+          key={feature.title}
+          progress={progress}
+          index={index}
+          isActive={index === active}
+          label={feature.title}
+          onSelect={onSelect}
+        />
+      ))}
+    </div>
+    <p className="text-xs font-medium tabular-nums text-muted-foreground">
+      {String(active + 1).padStart(2, "0")} of {String(features.length).padStart(2, "0")}
+    </p>
+  </div>
+);
+
+/** Plain stacked layout, used when the viewer prefers reduced motion. */
+const StackedFeatures = () => (
+  <div className="space-y-20">
+    {features.map((feature, index) => (
+      <FeaturePanel key={feature.title} feature={feature} index={index} />
+    ))}
+  </div>
+);
+
+export const Features = () => {
+  const reduceMotion = useReducedMotion();
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState(0);
+
+  const { scrollYProgress } = useScroll({
+    target: trackRef,
+    offset: ["start start", "end end"],
+  });
+
+  useMotionValueEvent(scrollYProgress, "change", (progress) => {
+    const next = Math.min(features.length - 1, Math.max(0, Math.floor(progress * features.length)));
+    setActive((current) => (current === next ? current : next));
+  });
+
+  /** Jump to the scroll position that sits in the middle of a given card's range. */
+  const goTo = (index: number) => {
+    const track = trackRef.current;
+    if (!track) return;
+    const trackTop = track.getBoundingClientRect().top + window.scrollY;
+    const scrollable = track.offsetHeight - window.innerHeight;
+    const target = trackTop + (scrollable * (index + 0.5)) / features.length;
+    window.scrollTo({ top: target, behavior: "smooth" });
+  };
+
+  if (reduceMotion) {
+    return (
+      <section id="features" className="relative border-y border-border/70 bg-background py-24">
+        <div className="container relative z-10 mx-auto px-6">
+          <div className="mb-16">
+            <SectionHeader />
+          </div>
+          <StackedFeatures />
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section id="features" className="relative border-y border-border/70 bg-background">
       <div className="absolute inset-0 bg-gradient-glow opacity-15" />
-      
-      <div className="container mx-auto px-6 relative z-10">
-        {/* Section Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-center max-w-3xl mx-auto mb-20"
-        >
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Buying Signals at Submission{" "}
-            <span className="text-gradient">— not at issuance</span>
-          </h2>
-          <p className="text-xl text-muted-foreground">
-            A filed permit means committed capital, stamped drawings, and weeks of plan review before any equipment is ordered. Perpetual reads that window continuously with everything from project scope, work items by trade, plan status, and every contractor on the job, license and phone included.
-          </p>
-        </motion.div>
 
-        {/* Features List - Alternating Layout */}
-        <div className="space-y-24">
-          {features.map((feature, index) => {
-            const isEven = index % 2 === 0;
-            
-            return (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.6 }}
-                className={`flex flex-col ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center gap-12 lg:gap-16`}
-              >
-                {/* Content Side */}
-                <div className="flex-1 space-y-6">
-                  <div className="w-14 h-14 rounded-2xl bg-secondary flex items-center justify-center">
-                    <feature.icon className="w-7 h-7 text-primary" />
-                  </div>
-                  <h3 className="text-3xl md:text-4xl font-bold text-foreground">
-                    {feature.title}
-                  </h3>
-                  <p className="text-lg text-muted-foreground leading-relaxed max-w-xl">
-                    {feature.description}
-                  </p>
-                  {"signalsIntro" in feature && feature.signalsIntro ? (
-                    <p className="text-lg text-muted-foreground leading-relaxed max-w-xl">
-                      {feature.signalsIntro}
-                    </p>
-                  ) : null}
-                  {"signals" in feature && feature.signals ? (
-                    <ul className="max-w-xl list-disc space-y-1 pl-5 text-base text-muted-foreground">
-                      {feature.signals.map((signal) => (
-                        <li key={signal}>{signal}</li>
-                      ))}
-                    </ul>
-                  ) : null}
-                  {"signalsAfter" in feature && feature.signalsAfter ? (
-                    <p className="text-lg text-muted-foreground leading-relaxed max-w-xl">
-                      {feature.signalsAfter}
-                    </p>
-                  ) : null}
-                  {"descriptionAfter" in feature && feature.descriptionAfter ? (
-                    <p className="text-lg text-muted-foreground leading-relaxed max-w-xl">
-                      {feature.descriptionAfter}
-                    </p>
-                  ) : null}
-                </div>
+      <div className="container relative z-10 mx-auto px-6 pt-24">
+        <SectionHeader />
+      </div>
 
-                {/* Image Side */}
-                <div className="flex-1 w-full">
-                  <div className="relative rounded-2xl overflow-hidden border border-border bg-card shadow-card transition-all duration-300 hover:border-foreground/20 hover:shadow-[0_10px_30px_-15px_rgba(0,0,0,0.15)]">
-                    <div className="bg-gradient-card">
-                      <img
-                        src={feature.image}
-                        alt={feature.title}
-                        className="w-full h-auto object-contain opacity-80 hover:opacity-100 transition-opacity duration-300"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })}
+      {/* Tall track: one viewport of scrolling per card. */}
+      <div
+        ref={trackRef}
+        className="relative z-10"
+        style={{ height: `${features.length * SCROLL_VH_PER_CARD}vh` }}
+      >
+        <div className="sticky top-0 flex h-screen items-center">
+          <div className="container mx-auto px-6">
+            <div className="mx-auto max-w-6xl space-y-8 lg:space-y-12">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={active}
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -24 }}
+                  transition={{ duration: 0.35, ease: "easeOut" }}
+                >
+                  <FeaturePanel feature={features[active]} index={active} />
+                </motion.div>
+              </AnimatePresence>
+
+              <ScrollProgress progress={scrollYProgress} active={active} onSelect={goTo} />
+            </div>
+          </div>
         </div>
       </div>
     </section>

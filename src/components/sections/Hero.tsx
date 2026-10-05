@@ -1,220 +1,157 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, MapPin, Send, Sparkles } from "lucide-react";
-import { useState } from "react";
+import { motion } from "framer-motion";
+import { ArrowUpRight, Filter, LayoutGrid, Lock } from "lucide-react";
+import { CtaRow } from "./CtaRow";
+import { DemoButton } from "./DemoDialog";
 
-type PermitType = "POOL" | "FIRE" | "HVAC" | "ELEC" | "MECH";
-type FeedCategory = "commercial" | "residential";
+type Stage = "Planning" | "Review";
 
-type PermitItem = {
+type Opportunity = {
+  /** Who filed it, plus the site address. */
+  company: string;
   address: string;
-  type: PermitType;
-  isNew?: boolean;
-  status: string;
-  time: string;
+  /** Scope of work as it reads on the filing. */
   description: string;
   location: string;
-  district: string;
+  category: string;
   value: string;
   contractor: string;
+  stage: Stage;
+  isNew?: boolean;
+  age: string;
+  contacts: number;
 };
 
-const TYPE_STYLES: Record<
-  PermitType,
-  { dotBg: string; dot: string; badge: string; label: string }
-> = {
-  POOL: {
-    dotBg: "bg-sky-100",
-    dot: "bg-sky-500",
-    badge: "bg-sky-500 text-white",
-    label: "Pool",
-  },
-  FIRE: {
-    dotBg: "bg-rose-100",
-    dot: "bg-rose-500",
-    badge: "bg-rose-100 text-rose-600",
-    label: "Fire",
-  },
-  HVAC: {
-    dotBg: "bg-violet-100",
-    dot: "bg-violet-500",
-    badge: "bg-violet-100 text-violet-700",
-    label: "HVAC",
-  },
-  ELEC: {
-    dotBg: "bg-amber-100",
-    dot: "bg-amber-500",
-    badge: "bg-amber-100 text-amber-700",
-    label: "Elec",
-  },
-  MECH: {
-    dotBg: "bg-teal-100",
-    dot: "bg-teal-500",
-    badge: "bg-teal-100 text-teal-700",
-    label: "Mech",
-  },
-};
+/** Headline counts above the list. Swap for live figures when the feed is wired up. */
+const STATS = [
+  "20k live projects",
+  "3 filed this week",
+  "268k contacts identified",
+  "2,154 reviewer decisions",
+];
 
-const COMMERCIAL_PERMITS: PermitItem[] = [
+const OPPORTUNITIES: Opportunity[] = [
   {
-    address: "4915 New Broad St",
-    type: "FIRE",
-    isNew: true,
-    status: "In Review",
-    time: "just now",
-    description: "Fire alarm system for the Tactical Brewery tenant build-out.",
-    location: "Orlando, FL",
-    district: "D3",
-    value: "$28K",
-    contractor: "DynaFire LLC",
-  },
-  {
-    address: "6700 Lake Nona Blvd",
-    type: "FIRE",
-    status: "In Review",
-    time: "just now",
+    company: "D.R. Horton Inc.",
+    address: "7024 Dolmen Dr",
     description:
-      "Fire alarm system for the UCF Lake Nona Hospital emergency department expansion.",
-    location: "Orlando, FL",
-    district: "D2",
-    value: "$142K",
-    contractor: "Siemens Fire",
-  },
-  {
-    address: "200 S Biscayne Blvd",
-    type: "HVAC",
-    status: "In Review",
-    time: "12s ago",
-    description: "Rooftop HVAC package units for a 12-story Class A office retrofit.",
-    location: "Miami, FL",
-    district: "D1",
-    value: "$310K",
-    contractor: "Comfort Systems USA",
-  },
-  {
-    address: "901 W 5th St",
-    type: "ELEC",
-    status: "In Review",
-    time: "28s ago",
-    description: "Electrical service upgrade for a mixed-use retail and office shell.",
-    location: "Austin, TX",
-    district: "D4",
-    value: "$185K",
-    contractor: "Walker Engineering",
-  },
-];
-
-const RESIDENTIAL_PERMITS: PermitItem[] = [
-  {
-    address: "11091 Cromwell Rd",
-    type: "POOL",
+      "Townhomes, 6 units, Lots 11-16, 2 stories, All units 1649sf, VB Construction, R3 Occupancy",
+    location: "Raleigh, NC",
+    category: "Multifamily",
+    value: "$254K",
+    contractor: "D.R. Horton Inc.",
+    stage: "Planning",
     isNew: true,
-    status: "In Review",
-    time: "just now",
-    description: "New pool for a Lake Nona custom home (Lot 37).",
-    location: "Orlando, FL",
-    district: "D1",
-    value: "$65K",
-    contractor: "Tropical Pools",
+    age: "26d ago",
+    contacts: 15,
   },
   {
-    address: "1231 Poinsettia Ave",
-    type: "POOL",
-    status: "In Review",
-    time: "just now",
-    description: "New residential swimming pool and spa.",
-    location: "Orlando, FL",
-    district: "D3",
-    value: "$81K",
-    contractor: "Cody Pools Inc",
+    company: "FIFTH OAK RALEIGH LLC",
+    address: "5251 Pinecross Way",
+    description:
+      "2-unit townhome buildings. Revised : Per application 2-unit duplex buildings (Type 3A/3B)",
+    location: "Raleigh, NC",
+    category: "Multifamily",
+    value: "$484K",
+    contractor: "NOVA POWER & LIGHT LLC",
+    stage: "Planning",
+    isNew: true,
+    age: "26d ago",
+    contacts: 12,
   },
   {
-    address: "8842 Coral Way",
-    type: "HVAC",
-    status: "In Review",
-    time: "9s ago",
-    description: "Whole-home mini-split install for a Coral Gables renovation.",
-    location: "Miami, FL",
-    district: "D2",
-    value: "$22K",
-    contractor: "Florida Cooling Pros",
+    company: "FIFTH OAK RALEIGH LLC",
+    address: "5250 Pinecross Way",
+    description: "2-unit townhome buildings",
+    location: "Raleigh, NC",
+    category: "Multifamily",
+    value: "$405K",
+    contractor: "NOVA POWER & LIGHT LLC",
+    stage: "Planning",
+    isNew: true,
+    age: "26d ago",
+    contacts: 12,
   },
   {
-    address: "412 Oak Hill Dr",
-    type: "MECH",
-    status: "In Review",
-    time: "21s ago",
-    description: "Mechanical permit for a new single-family home HVAC rough-in.",
-    location: "Austin, TX",
-    district: "D1",
-    value: "$14K",
-    contractor: "Hill Country Mech",
+    company: "Yellow Dot Heating & Air Conditioning",
+    address: "5926 Spring Forest Rd",
+    description:
+      "Townhomes, 4 units, Lots 34-37, 2 stories, VB Construction, R3 Occupancy, Real Property lines",
+    location: "Raleigh, NC",
+    category: "Multifamily",
+    value: "$344K",
+    contractor: "Yellow Dot Heating & Air Conditioning",
+    stage: "Review",
+    age: "26d ago",
+    contacts: 9,
+  },
+  {
+    company: "LEGACY CUSTOM HOMES INC.",
+    address: "1322 Mordecai Overlook Cir",
+    description: "MORDECAI COTTAGES - THREE-STORY RESIDENTIAL STYLE CONDOMINIUM UNITS.",
+    location: "Raleigh, NC",
+    category: "Multifamily",
+    value: "$366K",
+    contractor: "AMERICAN PLUMBING INC.",
+    stage: "Review",
+    age: "26d ago",
+    contacts: 7,
+  },
+  {
+    company: "FEP CONSTRUCTION LLC",
+    address: "214 S State St",
+    description: "Interior upfit, 2 stories, VB Construction, B Occupancy",
+    location: "Raleigh, NC",
+    category: "Commercial",
+    value: "$212K",
+    contractor: "FEP CONSTRUCTION LLC",
+    stage: "Review",
+    age: "27d ago",
+    contacts: 6,
   },
 ];
 
-const FEEDS: Record<
-  FeedCategory,
-  { permits: PermitItem[]; inReview: number; placeholder: string }
-> = {
-  commercial: {
-    permits: COMMERCIAL_PERMITS,
-    inReview: 278,
-    placeholder: "Find HVAC contractors doing mini-split installs...",
-  },
-  residential: {
-    permits: RESIDENTIAL_PERMITS,
-    inReview: 137,
-    placeholder: "Find pool builders installing spas this week...",
-  },
+const STAGE_STYLES: Record<Stage, string> = {
+  Planning: "text-emerald-600",
+  Review: "text-amber-600",
 };
 
-const BroadcastIcon = () => (
-  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-foreground">
-    <svg
-      viewBox="0 0 24 24"
-      className="h-4 w-4 text-background"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none" />
-      <path d="M8.5 8.5a5 5 0 0 1 0 7" />
-      <path d="M15.5 8.5a5 5 0 0 0 0 7" />
-      <path d="M5.5 5.5a9 9 0 0 1 0 13" />
-      <path d="M18.5 5.5a9 9 0 0 0 0 13" />
-    </svg>
-  </div>
+const OpportunityRow = ({ item }: { item: Opportunity }) => (
+  <article className="flex gap-4 border-b border-border px-5 py-4 last:border-b-0">
+    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-50">
+      <LayoutGrid className="h-5 w-5 text-emerald-600" />
+    </div>
+
+    <div className="flex min-w-0 flex-1 flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+      <div className="min-w-0">
+        <h3 className="font-sans text-base font-semibold leading-snug text-foreground">
+          {item.company} <span className="text-muted-foreground/60">—</span> {item.address}
+        </h3>
+        <p className="mt-1 text-sm leading-snug text-muted-foreground">{item.description}</p>
+        <p className="mt-1 text-sm text-muted-foreground/70">
+          {item.location} · {item.category} · {item.value} · {item.contractor}
+        </p>
+      </div>
+
+      <div className="shrink-0 space-y-1 sm:text-right">
+        <p className={`text-sm font-semibold ${STAGE_STYLES[item.stage]}`}>{item.stage}</p>
+        <p className="flex items-center gap-2 text-sm text-muted-foreground sm:justify-end">
+          {item.isNew && (
+            <span className="rounded-md bg-emerald-100 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-emerald-700">
+              New
+            </span>
+          )}
+          {item.age}
+        </p>
+        <p className="flex items-center gap-1.5 text-sm text-muted-foreground/70 sm:justify-end">
+          {item.contacts} contacts locked
+          <Lock className="h-3.5 w-3.5" />
+        </p>
+      </div>
+    </div>
+  </article>
 );
 
-const TypeDot = ({ type }: { type: PermitType }) => {
-  const styles = TYPE_STYLES[type];
-  return (
-    <div
-      className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${styles.dotBg}`}
-    >
-      <div className={`h-2.5 w-2.5 rounded-full ${styles.dot}`} />
-    </div>
-  );
-};
-
-const TypeBadge = ({ type }: { type: PermitType }) => {
-  const styles = TYPE_STYLES[type];
-  return (
-    <span
-      className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${styles.badge}`}
-    >
-      {styles.label}
-    </span>
-  );
-};
-
 export const Hero = () => {
-  const [feedCategory, setFeedCategory] = useState<FeedCategory>("commercial");
-  const feed = FEEDS[feedCategory];
-
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-hero border-b border-border/70">
       <div className="absolute inset-0 grid-pattern opacity-35" />
@@ -232,170 +169,86 @@ export const Hero = () => {
       />
 
       <div className="container mx-auto px-6 pt-32 pb-20 relative z-10">
-        <div className="max-w-4xl mx-auto text-center">
+        <div className="mx-auto max-w-6xl text-center">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-5xl md:text-7xl font-bold tracking-tight mb-6"
+            className="mx-auto mb-6 max-w-4xl text-4xl md:text-6xl font-bold tracking-tight"
           >
-            <span className="text-foreground">Buying Intelligence for</span>
-            <br />
-            <span className="text-gradient">Equipment Providers</span>
+            <span className="text-foreground">Every new commercial job,</span>
+            <br className="hidden md:block" />{" "}
+            <span className="text-gradient">the day the permit is filed.</span>
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-xl text-muted-foreground max-w-2xl mx-auto mb-10"
+            className="mx-auto mb-10 max-w-3xl text-lg md:text-xl leading-relaxed text-muted-foreground"
           >
-            Find your next buyer, before the purchase order exists
+            Perpetual reads commercial construction filings the day they land and turns each one
+            into a project: what&apos;s being built, every permit under it, who&apos;s running the
+            job, and the specs. You see the work before the trade packages are bought out.
           </motion.p>
 
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, delay: 0.28 }}
-            className="mx-auto mb-12 max-w-3xl text-left"
+            className="mx-auto mb-12 max-w-5xl text-left"
           >
-            <div className="mb-4 flex justify-center">
-              <div
-                role="tablist"
-                aria-label="Permit category"
-                className="inline-flex items-center rounded-lg border border-border bg-muted/60 p-1"
-              >
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={feedCategory === "commercial"}
-                  onClick={() => setFeedCategory("commercial")}
-                  className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-                    feedCategory === "commercial"
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  Commercial
-                </button>
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={feedCategory === "residential"}
-                  onClick={() => setFeedCategory("residential")}
-                  className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-                    feedCategory === "residential"
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  Residential
-                </button>
-              </div>
-            </div>
-
             <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-card">
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-4">
-                <div className="flex items-center gap-2.5">
-                  <BroadcastIcon />
+              {/* Header: what the list is, and what it covers */}
+              <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 border-b border-border px-5 py-4">
+                <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2">
                   <span className="text-base font-semibold text-foreground">
-                    Live permit feed
+                    Live opportunities
                   </span>
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-700">
+                  <span className="inline-flex items-center gap-1.5 rounded-md bg-emerald-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-emerald-700">
                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                     Live
                   </span>
+                  <span className="text-sm text-muted-foreground">
+                    {STATS.join(" · ")}
+                  </span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <span>Austin · Miami · Orlando</span>
-                  <span className="font-semibold text-foreground">{feed.inReview}</span>
-                  <span>in review</span>
-                </div>
+
+                <button
+                  type="button"
+                  className="inline-flex shrink-0 items-center gap-2 rounded-lg px-2 py-1 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
+                >
+                  <Filter className="h-4 w-4" />
+                  Filters
+                </button>
               </div>
 
-              <div className="relative max-h-[340px] overflow-hidden px-4 py-4 sm:max-h-[380px]">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={feedCategory}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    transition={{ duration: 0.2 }}
-                    className="space-y-3"
-                  >
-                    {feed.permits.map((permit) => (
-                      <div
-                        key={`${feedCategory}-${permit.address}`}
-                        className="rounded-xl border border-border bg-background px-3.5 py-3.5"
-                      >
-                        <div className="flex gap-3">
-                          <TypeDot type={permit.type} />
-
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-start justify-between gap-3">
-                              <div className="flex min-w-0 flex-wrap items-center gap-1.5">
-                                <h3 className="truncate text-sm font-semibold text-foreground">
-                                  {permit.address}
-                                </h3>
-                                <TypeBadge type={permit.type} />
-                                {permit.isNew && (
-                                  <span className="rounded-full bg-emerald-500 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
-                                    New
-                                  </span>
-                                )}
-                              </div>
-                              <div className="shrink-0 text-right">
-                                <span className="inline-flex rounded-full border border-orange-200 bg-orange-50 px-2 py-0.5 text-[10px] font-semibold text-orange-600">
-                                  {permit.status}
-                                </span>
-                                <p className="mt-1 text-[11px] text-muted-foreground">
-                                  {permit.time}
-                                </p>
-                              </div>
-                            </div>
-
-                            <p className="mt-1.5 text-sm leading-snug text-muted-foreground">
-                              {permit.description}
-                            </p>
-
-                            <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
-                              <span className="inline-flex items-center gap-1">
-                                <MapPin className="h-3 w-3" />
-                                {permit.location}
-                              </span>
-                              <span>·</span>
-                              <span>{permit.district}</span>
-                              <span className="font-semibold text-foreground">
-                                {permit.value}
-                              </span>
-                              <span>{permit.contractor}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </motion.div>
-                </AnimatePresence>
-
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-card to-transparent" />
+              {/* The list itself */}
+              <div className="relative max-h-[380px] overflow-hidden sm:max-h-[520px]">
+                {OPPORTUNITIES.map((item) => (
+                  <OpportunityRow key={`${item.company}-${item.address}`} item={item} />
+                ))}
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-card to-transparent" />
               </div>
 
-              <div className="border-t border-border px-4 pb-4 pt-1">
-                <div className="rounded-xl border border-border bg-muted/40 px-4 py-3">
-                  <p className="mb-3 text-sm text-muted-foreground">{feed.placeholder}</p>
-                  <div className="flex items-center justify-between border-t border-border/70 pt-3">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Sparkles className="h-4 w-4" />
-                      <span>Or describe the buyer you want</span>
-                    </div>
-                    <button
-                      type="button"
-                      aria-label="Send message"
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-muted text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-                    >
-                      <Send className="h-4 w-4" />
-                    </button>
+              {/* Natural language search */}
+              <div className="border-t border-border p-4">
+                <div className="flex items-center gap-3 rounded-xl border border-border bg-background px-4 py-3">
+                  <div className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-3 gap-y-1">
+                    <span className="text-sm text-muted-foreground">
+                      Describe the buyer or project you want...
+                    </span>
+                    <span className="truncate text-sm text-muted-foreground/60">
+                      Try &ldquo;Commercial HVAC equipment around Orlando&rdquo;
+                    </span>
                   </div>
+                  <button
+                    type="button"
+                    aria-label="Search"
+                    className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-500 text-white transition-colors hover:bg-emerald-600"
+                  >
+                    <ArrowUpRight className="h-4 w-4" />
+                  </button>
                 </div>
               </div>
             </div>
@@ -405,15 +258,8 @@ export const Hero = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <Button variant="hero" size="xl">
-              Get Started
-              <ArrowRight className="w-5 h-5" />
-            </Button>
-            <Button variant="heroOutline" size="xl">
-              Watch Demo
-            </Button>
+            <CtaRow size="xl" extra={<DemoButton size="xl" />} />
           </motion.div>
         </div>
       </div>
