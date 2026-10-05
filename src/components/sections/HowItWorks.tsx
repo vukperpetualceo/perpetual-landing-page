@@ -1,11 +1,12 @@
 import { motion } from "framer-motion";
 import { Check, X } from "lucide-react";
+import { CtaRow } from "./CtaRow";
 
-const columns = [
+const columns: { id: string; label: string; highlight?: boolean }[] = [
   { id: "dodge", label: "Dodge" },
   { id: "shovels", label: "Shovels" },
   { id: "perpetual", label: "Perpetual", highlight: true },
-] as const;
+];
 
 type CellValue = boolean | string;
 
@@ -24,12 +25,6 @@ const rows: { label: string; dodge: CellValue; shovels: CellValue; perpetual: Ce
   },
   {
     label: "Data lands the day of filing",
-    dodge: false,
-    shovels: false,
-    perpetual: true,
-  },
-  {
-    label: "You can still win the job",
     dodge: false,
     shovels: false,
     perpetual: true,
@@ -135,6 +130,8 @@ export const HowItWorks = () => {
             </tbody>
           </table>
         </motion.div>
+
+        <CtaRow className="mt-14" withBooking />
       </div>
     </section>
   );

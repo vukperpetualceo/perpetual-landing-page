@@ -8,7 +8,7 @@ const Contact = () => {
   useEffect(() => {
     document.title = "Contact | Perpetual";
     return () => {
-      document.title = "Perpetual | Buying Intelligence for Equipment Providers";
+      document.title = "Perpetual | Virginia Building Permits, the Day They're Filed";
     };
   }, []);
 
